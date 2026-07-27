@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="LordPack.Api/LordPack.Api.csproj" />
+  <Project Path="LordPack.Shared/LordPack.Shared.csproj" />
+</Solution>

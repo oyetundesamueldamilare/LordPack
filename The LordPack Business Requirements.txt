@@ -1,0 +1,81 @@
+The LordPack Business Requirements Document (BRD) & Software Requirements Specification (SRS) is well-structured and comprehensive, covering essential feature sets like guest access, audio playback controls, offline downloads, devotionals, push notifications, and administrative controls. 
+While the SRS draft suggested Flutter/React Native for the frontend and Node.js for the backend, the entire solution can be adapted into a unified .NET ecosystem (.NET 8/9), maximizing C# code sharing, performance, and development speed. 
+
+🛠️ Proposed .NET Architecture Blueprint
+ 📱 Mobile App (Android/iOS)          💻 Admin Portal (Web)
+    [.NET MAUI + XAML / MVVM]             [Blazor WebAssembly]
+               │                                   │
+               └─────────────┐       ┌─────────────┘
+                             ▼       ▼
+                     ⚡ ASP.NET Core Web API
+                        │             │
+        ┌───────────────┘             └───────────────┐
+        ▼                                             ▼
+🗄️ PostgreSQL + EF Core                 ☁️ Cloud Storage & CDN
+ (User data, Playlists, Metadata)         (AWS S3 / Cloudflare R2 + CDN)
+
+
+1. Mobile Frontend: .NET MAUI
+•	Cross-Platform: Single C# codebase targeting Android 10+ and iOS 15+. 
+•	Audio Engine: CommunityToolkit.Maui.MediaElement (utilizes native ExoPlayer on Android and AVPlayer on iOS). Supports background audio, lock screen controls, and OS media center integration. 
+•	Local Caching & Offline DB: SQLite with Entity Framework Core for offline devotional storage, download registry, and local playlist state. 
+•	Architecture Pattern: MVVM (Model-View-ViewModel) using CommunityToolkit.Mvvm.
+
+2. Backend Engine: ASP.NET Core Web API
+•	Framework: ASP.NET Core 8 or 9 Web API.
+•	Database & ORM: PostgreSQL managed via Entity Framework Core. 
+•	Authentication: ASP.NET Core Identity + JWT / Firebase Authentication (Google & Apple Sign-In integration). 
+•	Admin Dashboard: Blazor WebAssembly or Blazor Server for content upload, user administration, and reports. 
+
+3. Media Storage & Delivery
+•	Audio Hosting: AWS S3 or Cloudflare R2 for cost-effective audio object storage. 
+•	CDN Streaming: Cloudflare CDN or Amazon CloudFront serving chunked/ranged HTTP audio streaming to ensure launch speeds under 2 seconds. 
+🚀 Step-by-Step Implementation Roadmap
+
+
+Phase 1: Core Backend API Setup (ASP.NET Core)
+1.	Domain & Database Design:
+o	Models: User, AudioTrack, Book, Chapter, Devotional, Playlist, UserDownload.
+o	Configure EF Core migrations for PostgreSQL. 
+2.	Audio Delivery Endpoints:
+o	Build API endpoints returning secure pre-signed CDN URLs for MP3 streaming. 
+o	Support HTTP Range Requests in ASP.NET Core so mobile players can seek audio smoothly.
+3.	Authentication:
+o	Integrate JWT bearer tokens for registered users while exposing public endpoints for guest access (BR-003). 
+
+Phase 2: .NET MAUI Mobile App Foundation
+1.	Bootstrap Project & Plugins:
+o	Install NuGet package: CommunityToolkit.Maui.MediaElement.
+o	Configure background audio permissions:
+	Android: Enable ForegroundService and POST_NOTIFICATIONS.
+	iOS: Add UIBackgroundModes with audio in Info.plist.
+2.	Audio Service Layer:
+o	Wrap MediaElement inside a Singleton AudioPlayerService so playback persists while navigating views.
+o	Expose controls: Play(), Pause(), Seek(), SetSpeed(float speed), SetSleepTimer(). 
+3.	Offline Download Engine (HLR007):
+o	Use standard HttpClient with streaming to write audio files to FileSystem.Current.AppDataDirectory. 
+o	Save metadata entry in local SQLite DB. 
+o	Playback fallback logic: If local MP3 exists $\rightarrow$ load from file path; else $\rightarrow$ stream from CDN URL.
+
+Phase 3: Daily Devotionals, Playlists & UI
+1.	UI Views (XAML or C# Markup):
+o	Home / Landing View: Daily verse card, quick daily devotional, recent listening history. 
+o	Library View: Categorized Old & New Testament book/chapter list. 
+o	Player View: Mini-player docked at the bottom + full-screen view with speed and sleep controls. 
+o	Playlists & Favorites View: Filtered list saved via backend API or local SQLite. 
+2.	Push Notifications:
+o	Integrate Firebase Admin SDK (FirebaseAdmin) on the ASP.NET Core backend to queue daily scripture notifications. 
+o	Use native plugin handles in .NET MAUI for foreground/background push events (Plugin.Firebase or native FCM/APNs). 
+
+
+📋 Critical Requirements Check for .NET Developers
+BRD Requirement PDF	.NET Implementation Strategy
+Background Playback & Lockscreen	Use MediaElement metadata properties (MetadataTitle, MetadataArtist, MetadataArtworkUrl) to hook directly into iOS MPNowPlayingInfoCenter & Android MediaStyle Notifications.
+
+Offline Downloads	Stream bytes to .mp3 files in app storage and keep track of state in SQLite using EF Core SQLite. 
+Search Functionality (HLR005) 	Implement PostgreSQL Full-Text Search or EF Core EF.Functions.ILike on Backend API. 
+Guest Access (BR-003) 	Store Guest status in MAUI Preferences API; restrict download features in ViewModel commands. 
+🛠️ Next Recommended Steps
+1.	Database Schema Design: Create the ERD for Books, Chapters, Devotionals, and Playlists in EF Core.
+2.	MAUI Audio Player Prototype: Build a small proof-of-concept .NET MAUI app testing MediaElement background streaming and local file downloads.
+
