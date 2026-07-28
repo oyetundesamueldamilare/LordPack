@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:LordPack.Mobile.ViewModels"
+             x:Class="LordPack.Mobile.Views.LoginPage"
+             x:DataType="vm:LoginViewModel"
+             Title="Sign In">
+
+    <VerticalStackLayout Padding="30" Spacing="15" VerticalOptions="Center">
+        <Label Text="LordPack Audio" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" />
+
+        <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email" />
+        <Entry Placeholder="Password" Text="{Binding Password}" IsPassword="True" />
+
+        <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding ErrorMessage.Length}" />
+
+        <Button Text="Login" Command="{Binding LoginCommand}" />
+        <Button Text="Continue as Guest" Command="{Binding LoginAsGuestCommand}" BackgroundColor="Gray" />
+
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+    </VerticalStackLayout>
+</ContentPage>
