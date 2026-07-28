@@ -1,4 +1,3 @@
-using System.Text;
 using LordPack.Api.Data;
 using LordPack.Api.Interfaces;
 using LordPack.Api.Repositories;
@@ -8,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +16,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 
 // 2. Identity Configuration
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
@@ -49,7 +49,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// 4. Dependency Injection (Repositories & Services)
+// 4. Dependency Injection
 builder.Services.AddScoped<IAudioBookRepository, AudioBookRepository>();
 builder.Services.AddScoped<IDevotionalRepository, DevotionalRepository>();
 
@@ -58,26 +58,28 @@ builder.Services.AddScoped<IDevotionalService, DevotionalService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+
+// 5. Swagger Setup (Replaces AddOpenApi)
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// 5. Database Initialization & Seeding
+// 6. Database Initialization & Seeding
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await DbInitializer.SeedAsync(dbContext);
 }
 
-// 6. HTTP Pipeline Configuration
+// 7. Pipeline Configuration
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
-// IMPORTANT: Authentication MUST come BEFORE Authorization
 app.UseAuthentication();
 app.UseAuthorization();
 
