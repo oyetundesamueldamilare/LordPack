@@ -1,8 +1,8 @@
 ﻿using LordPack.Api.Interfaces;
+using LordPack.Shared.DTOs;
 using LordPack.Shared.Models;
 
 namespace LordPack.Api.Services;
-
 
 public class AudioBookService : IAudioBookService
 {
@@ -13,9 +13,20 @@ public class AudioBookService : IAudioBookService
         _repository = repository;
     }
 
-    public async Task<IEnumerable<AudioBook>> GetBooksAsync(Testament? testament, string version)
+    public async Task<IEnumerable<AudioBookDto>> GetAudioBookDtosAsync(Testament? testament, string version)
     {
-        return await _repository.GetBooksAsync(testament, version);
+        var books = await _repository.GetBooksAsync(testament, version);
+
+        // ✅ Business Logic & DTO Projection lives exclusively in the Service
+        return books.SelectMany(book => (book.Chapters ?? new List<Chapter>()).Select(chapter => new AudioBookDto
+        {
+            Title = $"{book.Name} - Chapter {chapter.ChapterNumber}",
+            Author = $"{book.Version} ({book.Testament})",
+            Description = $"{book.Version} Audio for {book.Name} Chapter {chapter.ChapterNumber}",
+            CoverImageUrl = "https://picsum.photos/id/1025/400/400",
+            AudioUrl = chapter.AudioUrl,
+            DurationInSeconds = (int)chapter.Duration.TotalSeconds
+        }));
     }
 
     public async Task<IEnumerable<Chapter>?> GetChaptersByBookIdAsync(int bookId)

@@ -1,4 +1,5 @@
 ﻿using LordPack.Api.Interfaces;
+using LordPack.Shared.DTOs;
 using LordPack.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,9 +17,11 @@ public class AudioBooksController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetBooks([FromQuery] Testament? testament, [FromQuery] string version = "KJV")
+    public async Task<ActionResult<IEnumerable<AudioBookDto>>> GetBooks(
+        [FromQuery] Testament? testament,
+        [FromQuery] string version = "KJV")
     {
-        var books = await _audioBookService.GetBooksAsync(testament, version);
+        var books = await _audioBookService.GetAudioBookDtosAsync(testament, version);
         return Ok(books);
     }
 

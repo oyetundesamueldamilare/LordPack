@@ -42,11 +42,11 @@ public class AudioService : IAudioService
         return Task.CompletedTask;
     }
 
-    public Task SeekToAsync(double positionSeconds)
+    public Task SeekAsync(double positionInSeconds)
     {
-        if (_player != null)
+        if (_player != null && _player.CanSeek)
         {
-            _player.Seek(positionSeconds);
+            _player.Seek(positionInSeconds);
         }
         return Task.CompletedTask;
     }

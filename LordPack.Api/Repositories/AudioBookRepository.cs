@@ -3,42 +3,43 @@ using LordPack.Api.Interfaces;
 using LordPack.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace LordPack.Api.Repositories
+namespace LordPack.Api.Repositories;
+
+public class AudioBookRepository : IAudioBookRepository
 {
-    public class AudioBookRepository : IAudioBookRepository
+    private readonly AppDbContext _context;
+
+    public AudioBookRepository(AppDbContext context)
     {
-        private readonly AppDbContext _context;
+        _context = context;
+    }
 
-        public AudioBookRepository(AppDbContext context)
+    public async Task<IEnumerable<AudioBook>> GetBooksAsync(Testament? testament, string version)
+    {
+        var query = _context.AudioBooks
+            .Include(b => b.Chapters) // ✅ Load chapters for Service mapping
+            .Where(b => b.Version == version);
+
+        if (testament.HasValue)
         {
-            _context = context;
+            query = query.Where(b => b.Testament == testament.Value);
         }
 
-        public async Task<IEnumerable<AudioBook>> GetBooksAsync(Testament? testament, string version)
-        {
-            var query = _context.AudioBooks.Where(b => b.Version == version);
+        return await query.ToListAsync();
+    }
 
-            if (testament.HasValue)
-            {
-                query = query.Where(b => b.Testament == testament.Value);
-            }
+    public async Task<AudioBook?> GetBookWithChaptersAsync(int bookId)
+    {
+        return await _context.AudioBooks
+            .Include(b => b.Chapters)
+            .FirstOrDefaultAsync(b => b.Id == bookId);
+    }
 
-            return await query.ToListAsync();
-        }
-
-        public async Task<AudioBook?> GetBookWithChaptersAsync(int bookId)
-        {
-            return await _context.AudioBooks
-                .Include(b => b.Chapters)
-                .FirstOrDefaultAsync(b => b.Id == bookId);
-        }
-
-        public async Task<Chapter?> GetChapterDetailsAsync(int chapterId)
-        {
-            return await _context.Chapters
-                .Include(c => c.AudioBook)
-                .Include(c => c.Verses)
-                .FirstOrDefaultAsync(c => c.Id == chapterId);
-        }
+    public async Task<Chapter?> GetChapterDetailsAsync(int chapterId)
+    {
+        return await _context.Chapters
+            .Include(c => c.AudioBook)
+            .Include(c => c.Verses)
+            .FirstOrDefaultAsync(c => c.Id == chapterId);
     }
 }

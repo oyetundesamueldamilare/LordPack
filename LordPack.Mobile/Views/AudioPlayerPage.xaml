@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:LordPack.Mobile.ViewModels"
+             x:Class="LordPack.Mobile.Views.AudioPlayerPage"
+             x:DataType="vm:AudioPlayerViewModel"
+             Title="Now Playing"
+             BackgroundColor="#0F172A">
+
+    <VerticalStackLayout Padding="24" Spacing="24" VerticalOptions="Center">
+
+        <!-- Large Artwork -->
+        <Border StrokeShape="RoundRectangle 20" StrokeThickness="0" HeightRequest="280" WidthRequest="280" HorizontalOptions="Center">
+            <Image Source="{Binding SelectedAudioBook.CoverImageUrl}" Aspect="AspectFill" />
+        </Border>
+
+        <!-- Track Info -->
+        <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+            <Label Text="{Binding SelectedAudioBook.Title}" FontSize="22" FontAttributes="Bold" TextColor="White" HorizontalTextAlignment="Center" />
+            <Label Text="{Binding SelectedAudioBook.Author}" FontSize="14" TextColor="#94A3B8" HorizontalTextAlignment="Center" />
+        </VerticalStackLayout>
+
+        <!-- Progress Slider -->
+        <VerticalStackLayout Spacing="4">
+            <Slider Minimum="0" 
+                    Maximum="{Binding Duration}" 
+                    Value="{Binding CurrentPosition}" 
+                    MinimumTrackColor="#6366F1" 
+                    MaximumTrackColor="#334155" 
+                    ThumbColor="#818CF8" />
+
+            <Grid ColumnDefinitions="*, *">
+                <Label Grid.Column="0" Text="{Binding FormattedCurrentPosition}" FontSize="12" TextColor="#94A3B8" HorizontalOptions="Start" />
+                <Label Grid.Column="1" Text="{Binding FormattedDuration}" FontSize="12" TextColor="#94A3B8" HorizontalOptions="End" />
+            </Grid>
+        </VerticalStackLayout>
+
+        <!-- Playback Controls -->
+        <Grid ColumnDefinitions="*, *, *" HorizontalOptions="Center" WidthRequest="240" ColumnSpacing="16">
+            <Button Grid.Column="0" Text="-10s" Command="{Binding SkipBackwardCommand}" BackgroundColor="#1E293B" TextColor="White" CornerRadius="25" HeightRequest="50" WidthRequest="50" />
+            <Button Grid.Column="1" Text="{Binding IsPlaying, Converter={StaticResource PlayPauseTextConverter}}" Command="{Binding TogglePlayPauseCommand}" BackgroundColor="#6366F1" TextColor="White" CornerRadius="30" HeightRequest="60" WidthRequest="60" FontAttributes="Bold" />
+            <Button Grid.Column="2" Text="+10s" Command="{Binding SkipForwardCommand}" BackgroundColor="#1E293B" TextColor="White" CornerRadius="25" HeightRequest="50" WidthRequest="50" />
+        </Grid>
+
+    </VerticalStackLayout>
+</ContentPage>

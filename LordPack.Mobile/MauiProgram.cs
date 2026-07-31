@@ -51,6 +51,7 @@ public static class MauiProgram
         builder.Services.AddTransient<AudioPlayerViewModel>();
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<MainPage>();
+        builder.Services.AddTransient<AudioPlayerPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

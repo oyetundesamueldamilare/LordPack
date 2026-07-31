@@ -13,6 +13,8 @@
         Route="LoginPage"
         FlyoutItemIsVisible="False" />
 
+    <ShellContent Title="Player" ContentTemplate="{DataTemplate views:AudioPlayerPage}" Route="AudioPlayerPage" FlyoutItemIsVisible="False" />
+    
     <!-- Main Audio Dashboard Route -->
     <ShellContent
         Title="Dashboard"

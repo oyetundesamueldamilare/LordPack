@@ -10,9 +10,10 @@ namespace LordPack.Mobile.Interfaces
         Task PlayAsync();
         Task PauseAsync();
         Task StopAsync();
-        Task SeekToAsync(double positionSeconds);
+        Task SeekAsync(double positionSeconds);
         bool IsPlaying { get; }
         double CurrentPosition { get; }
         double Duration { get; }
     }
+
 }
