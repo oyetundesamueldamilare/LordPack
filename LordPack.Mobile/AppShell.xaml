@@ -3,12 +3,20 @@
     x:Class="LordPack.Mobile.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:LordPack.Mobile"
-    Title="LordPack.Mobile">
+    xmlns:views="clr-namespace:LordPack.Mobile.Views"
+    Shell.FlyoutBehavior="Disabled">
 
+    <!-- Login Page Route -->
     <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
+        Title="Login"
+        ContentTemplate="{DataTemplate views:LoginPage}"
+        Route="LoginPage"
+        FlyoutItemIsVisible="False" />
+
+    <!-- Main Audio Dashboard Route -->
+    <ShellContent
+        Title="Dashboard"
+        ContentTemplate="{DataTemplate views:MainPage}"
         Route="MainPage" />
 
 </Shell>

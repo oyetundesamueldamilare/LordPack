@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:LordPack.Mobile.ViewModels"
+             xmlns:dtos="clr-namespace:LordPack.Shared.DTOs;assembly=LordPack.Shared"
+             x:Class="LordPack.Mobile.Views.MainPage"
+             x:DataType="vm:AudioPlayerViewModel"
+             Title="LordPack Audio Library"
+             BackgroundColor="#0F172A">
+
+    <Grid RowDefinitions="*, Auto">
+
+        <!-- 1. Audiobook Catalog List -->
+        <RefreshView Grid.Row="0" Command="{Binding LoadAudioBooksCommand}" IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding AudioBooks}" Margin="16">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="12" VerticalItemSpacing="12" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dtos:AudioBookDto">
+                        <Border StrokeShape="RoundRectangle 12" BackgroundColor="#1E293B" StrokeThickness="0" Padding="10">
+                            <VerticalStackLayout Spacing="8">
+                                <Image Source="{Binding CoverImageUrl}" Aspect="AspectFill" HeightRequest="140" WidthRequest="140">
+                                    <Image.Clip>
+                                        <RoundRectangleGeometry CornerRadius="8" />
+                                    </Image.Clip>
+                                </Image>
+                                <Label Text="{Binding Title}" FontAttributes="Bold" TextColor="White" LineBreakMode="TailTruncation" MaxLines="1" />
+                                <Label Text="{Binding Author}" FontSize="12" TextColor="#94A3B8" LineBreakMode="TailTruncation" MaxLines="1" />
+
+                                <Button Text="Play" 
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AudioPlayerViewModel}}, Path=PlayAudioCommand}" 
+                                        CommandParameter="{Binding .}" 
+                                        BackgroundColor="#6366F1" 
+                                        TextColor="White" 
+                                        CornerRadius="6" 
+                                        HeightRequest="36" Padding="0" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <!-- 2. Embedded Bottom Player Bar -->
+        <Border Grid.Row="1" 
+                BackgroundColor="#1E293B" 
+                Stroke="#334155" 
+                StrokeThickness="1" 
+                Margin="12" 
+                Padding="12" 
+                StrokeShape="RoundRectangle 16"
+                IsVisible="{Binding SelectedAudioBook, Converter={StaticResource IsNotNullConverter}}">
+            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
+                <Image Grid.Column="0" Source="{Binding SelectedAudioBook.CoverImageUrl}" WidthRequest="48" HeightRequest="48">
+                    <Image.Clip>
+                        <RoundRectangleGeometry CornerRadius="6" />
+                    </Image.Clip>
+                </Image>
+
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                    <Label Text="{Binding SelectedAudioBook.Title}" FontAttributes="Bold" TextColor="White" LineBreakMode="TailTruncation" />
+                    <Label Text="{Binding SelectedAudioBook.Author}" FontSize="12" TextColor="#94A3B8" />
+                </VerticalStackLayout>
+
+                <Button Grid.Column="2" 
+                        Text="{Binding IsPlaying, Converter={StaticResource PlayPauseTextConverter}}" 
+                        Command="{Binding TogglePlayPauseCommand}" 
+                        BackgroundColor="#6366F1" 
+                        TextColor="White" 
+                        CornerRadius="20" 
+                        WidthRequest="40" 
+                        HeightRequest="40" Padding="0" />
+            </Grid>
+        </Border>
+
+    </Grid>
+</ContentPage>
