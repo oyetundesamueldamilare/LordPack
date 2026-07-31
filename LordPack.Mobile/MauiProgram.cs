@@ -1,8 +1,9 @@
-﻿using LordPack.Mobile.Handlers;
+﻿using LordPack.Api.Interfaces;
+using LordPack.Mobile.Handlers;
+using LordPack.Mobile.Interfaces;
 using LordPack.Mobile.Services;
 using LordPack.Mobile.ViewModels;
-using LordPack.Mobile.Views; // <--- Ensure this using directive is present
-using LordPack.Mobile.Interfaces;
+using LordPack.Mobile.Views;
 using Microsoft.Extensions.Logging;
 using Plugin.Maui.Audio;
 
@@ -21,32 +22,33 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        // 1. Configure Base HTTP Client URL
+        // Safe cross-platform base URL assignment
         string baseUrl = DeviceInfo.Platform == DevicePlatform.Android
             ? "https://10.0.2.2:7147/"
             : "https://localhost:7147/";
 
         builder.Services.AddTransient<JwtAuthHandler>();
 
+        // Configure HttpClient with SSL Bypass for local Debug builds
         builder.Services.AddHttpClient("LordPackApi", client =>
         {
             client.BaseAddress = new Uri(baseUrl);
         })
-        .AddHttpMessageHandler<JwtAuthHandler>();
+        .AddHttpMessageHandler<JwtAuthHandler>()
+        .ConfigurePrimaryHttpMessageHandler(() => GetInsecureHandler());
 
         builder.Services.AddScoped(sp =>
             sp.GetRequiredService<IHttpClientFactory>().CreateClient("LordPackApi"));
 
-        // 2. Register Client Services & Audio Engine
+        // Register Core Services
         builder.Services.AddSingleton(AudioManager.Current);
         builder.Services.AddSingleton<IAudioService, AudioService>();
         builder.Services.AddSingleton<IClientAuthService, ClientAuthService>();
+        builder.Services.AddSingleton<IClientAudioBookService, ClientAudioBookService>();
 
-        // Register ViewModels
+        // Register ViewModels & Pages
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<AudioPlayerViewModel>();
-
-        // Register Pages
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<MainPage>();
 
@@ -55,5 +57,14 @@ public static class MauiProgram
 #endif
 
         return builder.Build();
+    }
+
+    private static HttpMessageHandler GetInsecureHandler()
+    {
+        var handler = new HttpClientHandler();
+#if DEBUG
+        handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+#endif
+        return handler;
     }
 }
