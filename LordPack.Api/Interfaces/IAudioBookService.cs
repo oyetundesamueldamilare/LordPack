@@ -7,5 +7,5 @@ public interface IAudioBookService
 {
     Task<IEnumerable<AudioBookDto>> GetAudioBookDtosAsync(Testament? testament, string version);
     Task<IEnumerable<Chapter>?> GetChaptersByBookIdAsync(int bookId);
-    Task<Chapter?> GetChapterDetailsAsync(int chapterId);
+    Task<ChapterDetailDto?> GetChapterDetailsAsync(int chapterId);
 }

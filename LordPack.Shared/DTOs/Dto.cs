@@ -51,3 +51,19 @@ public class AudioBookDto
     public string Category { get; set; } = string.Empty;
     public DateTime PublishedDate { get; set; }
 }
+
+public class ChapterDetailDto
+{
+    public int Id { get; set; }
+    public int ChapterNumber { get; set; }
+    public string BookName { get; set; } = string.Empty;
+    public string AudioUrl { get; set; } = string.Empty;
+    public double DurationInSeconds { get; set; }
+    public List<VerseDto> Verses { get; set; } = new();
+}
+
+public class VerseDto
+{
+    public int VerseNumber { get; set; }
+    public string Text { get; set; } = string.Empty;
+}

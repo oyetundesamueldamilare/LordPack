@@ -35,8 +35,23 @@ public class AudioBookService : IAudioBookService
         return book?.Chapters.OrderBy(c => c.ChapterNumber);
     }
 
-    public async Task<Chapter?> GetChapterDetailsAsync(int chapterId)
+    public async Task<ChapterDetailDto?> GetChapterDetailsAsync(int chapterId)
     {
-        return await _repository.GetChapterDetailsAsync(chapterId);
+        var chapter = await _repository.GetChapterDetailsAsync(chapterId);
+        if (chapter == null) return null;
+
+        return new ChapterDetailDto
+        {
+            Id = chapter.Id,
+            ChapterNumber = chapter.ChapterNumber,
+            BookName = chapter.AudioBook?.Name ?? string.Empty,
+            AudioUrl = chapter.AudioUrl,
+            DurationInSeconds = chapter.Duration.TotalSeconds,
+            Verses = chapter.Verses?.Select(v => new VerseDto
+            {
+                VerseNumber = v.VerseNumber,
+                Text = v.Text
+            }).OrderBy(v => v.VerseNumber).ToList() ?? new()
+        };
     }
 }

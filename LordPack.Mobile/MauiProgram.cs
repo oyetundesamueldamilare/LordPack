@@ -1,5 +1,4 @@
-﻿using LordPack.Api.Interfaces;
-using LordPack.Mobile.Handlers;
+﻿using LordPack.Mobile.Handlers;
 using LordPack.Mobile.Interfaces;
 using LordPack.Mobile.Services;
 using LordPack.Mobile.ViewModels;
@@ -52,6 +51,8 @@ public static class MauiProgram
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<AudioPlayerPage>();
+        builder.Services.AddTransient<BibleViewModel>();
+        builder.Services.AddTransient<BiblePage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

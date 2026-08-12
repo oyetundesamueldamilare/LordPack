@@ -20,5 +20,13 @@
         Title="Dashboard"
         ContentTemplate="{DataTemplate views:MainPage}"
         Route="MainPage" />
+    <TabBar>
+        <Tab Title="Listen" Icon="icon_audio.png">
+            <ShellContent ContentTemplate="{DataTemplate views:MainPage}" />
+        </Tab>
+        <Tab Title="Read Bible" Icon="icon_bible.png">
+            <ShellContent ContentTemplate="{DataTemplate views:BiblePage}" />
+        </Tab>
+    </TabBar>
 
 </Shell>

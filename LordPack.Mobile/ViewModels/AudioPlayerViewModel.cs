@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LordPack.Api.Interfaces;
 using LordPack.Mobile.Interfaces;
 using LordPack.Mobile.Services;
 using LordPack.Shared.DTOs;
