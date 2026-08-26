@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LordPack.Shared.DTOs;
+﻿namespace LordPack.Shared.DTOs;
 
 public class RegisterRequestDto
-    {
-        public string FullName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-    }
-public class RegisterDto
 {
     public string FullName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
@@ -18,25 +8,20 @@ public class RegisterDto
 }
 
 public class LoginRequestDto
-    {
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-    }
-public class LoginDto
 {
     public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
 }
 
 public class AuthResponseDto
-    {
-        public string Token { get; set; } = string.Empty;
-        public string UserId { get; set; } = string.Empty;
-        public string FullName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public bool IsGuest { get; set; }
-        public DateTime Expiration { get; set; }
-    }
+{
+    public string Token { get; set; } = string.Empty;
+    public string UserId { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public bool IsGuest { get; set; }
+    public DateTime Expiration { get; set; }
+}
 
 public class AudioBookDto
 {

@@ -4,9 +4,10 @@ namespace LordPack.Mobile.Interfaces;
 
 public interface IClientAuthService
 {
-    Task<bool> LoginAsync(LoginDto dto);
-    Task<bool> RegisterAsync(RegisterDto dto);
+    Task<bool> LoginAsync(LoginRequestDto dto);
+    Task<bool> RegisterAsync(RegisterRequestDto dto);
     Task<bool> LoginAsGuestAsync();
     Task LogoutAsync();
     Task<bool> IsAuthenticatedAsync();
+    Task<AuthResponseDto?> GetCurrentSessionAsync();
 }

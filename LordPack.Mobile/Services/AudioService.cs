@@ -5,15 +5,39 @@ namespace LordPack.Mobile.Services;
 
 public class AudioService : IAudioService
 {
-    private readonly IAudioManager _audioManager;
-    private IAudioPlayer? _player;
+        private readonly IAudioManager _audioManager;
+        private readonly IDownloadService _downloadService;
+        private IAudioPlayer? _player;
 
-    public AudioService(IAudioManager audioManager)
-    {
-        _audioManager = audioManager;
-    }
+        public AudioService(IAudioManager audioManager, IDownloadService downloadService)
+        {
+            _audioManager = audioManager;
+            _downloadService = downloadService;
+        }
 
-    public bool IsPlaying => _player?.IsPlaying ?? false;
+        public async Task PlayAudioAsync(string remoteUrl, string fileName)
+        {
+            // 1. Resolve source: check if downloaded locally first
+            string playbackSource;
+            if (_downloadService.IsAudioDownloaded(fileName))
+            {
+                playbackSource = _downloadService.GetLocalFilePath(fileName);
+                using var stream = File.OpenRead(playbackSource);
+                _player = _audioManager.CreatePlayer(stream);
+            }
+            else
+            {
+                // Fallback to streaming directly from remote URL
+                playbackSource = remoteUrl;
+                using var httpClient = new HttpClient();
+                var stream = await httpClient.GetStreamAsync(playbackSource);
+                _player = _audioManager.CreatePlayer(stream);
+            }
+
+            _player.Play();
+        }
+
+        public bool IsPlaying => _player?.IsPlaying ?? false;
     public double CurrentPosition => _player?.CurrentPosition ?? 0;
     public double Duration => _player?.Duration ?? 0;
 
@@ -24,11 +48,6 @@ public class AudioService : IAudioService
         _player = _audioManager.CreatePlayer(stream);
     }
 
-    public Task PlayAsync()
-    {
-        _player?.Play();
-        return Task.CompletedTask;
-    }
 
     public Task PauseAsync()
     {

@@ -7,7 +7,7 @@ namespace LordPack.Mobile.Interfaces
     public interface IAudioService
     {
         Task InitializeAsync(string audioUrl);
-        Task PlayAsync();
+        Task PlayAudioAsync(string remoteUrl, string fileName);
         Task PauseAsync();
         Task StopAsync();
         Task SeekAsync(double positionSeconds);

@@ -11,6 +11,20 @@ public partial class BibleViewModel : ObservableObject
     private readonly IClientAudioBookService _audioBookService;
     private readonly IAudioService _audioService;
 
+    [RelayCommand]
+    public async Task NextChapterAsync()
+    {
+        if (CurrentChapter == null) return;
+        await LoadChapterAsync(CurrentChapter.ChapterNumber + 1);
+    }
+
+    [RelayCommand]
+    public async Task PreviousChapterAsync()
+    {
+        if (CurrentChapter == null || CurrentChapter.ChapterNumber <= 1) return;
+        await LoadChapterAsync(CurrentChapter.ChapterNumber - 1);
+    }
+
     private ChapterDetailDto? _currentChapter;
     public ChapterDetailDto? CurrentChapter
     {
@@ -83,4 +97,5 @@ public partial class BibleViewModel : ObservableObject
             IsPlaying = true;
         }
     }
+
 }

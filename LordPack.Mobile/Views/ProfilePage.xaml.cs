@@ -2,11 +2,11 @@ using LordPack.Mobile.ViewModels;
 
 namespace LordPack.Mobile.Views;
 
-public partial class LoginPage : ContentPage
+public partial class ProfilePage : ContentPage
 {
-    private readonly LoginViewModel _viewModel;
+    private readonly ProfileViewModel _viewModel;
 
-    public LoginPage(LoginViewModel viewModel)
+    public ProfilePage(ProfileViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = _viewModel = viewModel;
@@ -15,6 +15,6 @@ public partial class LoginPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.CheckExistingSessionAsync();
+        await _viewModel.LoadUserProfileAsync();
     }
 }

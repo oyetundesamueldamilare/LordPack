@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LordPack.Mobile.Interfaces;
-using LordPack.Mobile.Services;
 using LordPack.Shared.DTOs;
 
 namespace LordPack.Mobile.ViewModels;
@@ -27,17 +26,34 @@ public partial class LoginViewModel : ObservableObject
         _authService = authService;
     }
 
+    /// <summary>
+    /// Call from LoginPage.xaml.cs OnAppearing to bypass login if already authenticated.
+    /// </summary>
+    public async Task CheckExistingSessionAsync()
+    {
+        if (await _authService.IsAuthenticatedAsync())
+        {
+            await Shell.Current.GoToAsync("//MainPage");
+        }
+    }
+
     [RelayCommand]
     private async Task LoginAsync()
     {
         if (IsBusy) return;
 
+        if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
+        {
+            ErrorMessage = "Please enter both email and password.";
+            return;
+        }
+
         IsBusy = true;
         ErrorMessage = string.Empty;
 
-        var success = await _authService.LoginAsync(new LoginDto
+        var success = await _authService.LoginAsync(new LoginRequestDto
         {
-            Email = Email,
+            Email = Email.Trim(),
             Password = Password
         });
 
