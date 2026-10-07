@@ -1,4 +1,5 @@
-﻿using LordPack.Mobile.Handlers;
+using CommunityToolkit.Maui.Core;
+using LordPack.Mobile.Handlers;
 using LordPack.Mobile.Interfaces;
 using LordPack.Mobile.Services;
 using LordPack.Mobile.ViewModels;
@@ -12,9 +13,12 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
+        GlobalExceptionHandler.Initialize();
+
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseMauiCommunityToolkitCore()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -27,6 +31,7 @@ public static class MauiProgram
             : "https://localhost:7147/";
 
         builder.Services.AddTransient<JwtAuthHandler>();
+        builder.Services.AddTransient<AuthHeaderHandler>();
 
         // Configure HttpClient with SSL Bypass for local Debug builds
         builder.Services.AddHttpClient("LordPackApi", client =>
@@ -39,43 +44,61 @@ public static class MauiProgram
         builder.Services.AddScoped(sp =>
             sp.GetRequiredService<IHttpClientFactory>().CreateClient("LordPackApi"));
 
-        // Register Core Services
+        // Register Core Singletons
         builder.Services.AddSingleton(AudioManager.Current);
         builder.Services.AddSingleton<IAudioService, AudioService>();
-        builder.Services.AddSingleton<IClientAuthService, ClientAuthService>();
-        builder.Services.AddSingleton<IClientAudioBookService, ClientAudioBookService>();
+        builder.Services.AddSingleton<LocalBibleDatabase>();
 
-        // Download Service & Offline Caching
-        builder.Services.AddHttpClient<IDownloadService, DownloadService>();
+        // Typed HttpClients
+        builder.Services.AddHttpClient<IClientAuthService, ClientAuthService>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl);
+        })
+        .AddHttpMessageHandler<AuthHeaderHandler>()
+        .ConfigurePrimaryHttpMessageHandler(() => GetInsecureHandler());
 
-        // Register ViewModels & Pages
+        builder.Services.AddHttpClient<IClientAudioBookService, ClientAudioBookService>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl);
+        })
+        .ConfigurePrimaryHttpMessageHandler(() => GetInsecureHandler());
+
+        builder.Services.AddHttpClient<IDownloadService, DownloadService>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl);
+        })
+        .ConfigurePrimaryHttpMessageHandler(() => GetInsecureHandler());
+
+        builder.Services.AddHttpClient<IPushNotificationService, PushNotificationService>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl);
+        })
+        .ConfigurePrimaryHttpMessageHandler(() => GetInsecureHandler());
+
+        builder.Services.AddHttpClient<ITextBibleService, TextBibleService>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl);
+        })
+        .ConfigurePrimaryHttpMessageHandler(() => GetInsecureHandler());
+
+        // Register ViewModels
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<AudioPlayerViewModel>();
+        builder.Services.AddTransient<BibleViewModel>();
+        builder.Services.AddTransient<ProfileViewModel>();
+        builder.Services.AddTransient<RegisterViewModel>();
+        builder.Services.AddTransient<BookListViewModel>();
+        builder.Services.AddTransient<ChapterPickerViewModel>();
+
+        // Register Pages
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<AudioPlayerPage>();
-        builder.Services.AddTransient<BibleViewModel>();
         builder.Services.AddTransient<BiblePage>();
-        builder.Services.AddTransient<ProfileViewModel>();
         builder.Services.AddTransient<ProfilePage>();
-        // Register DelegatingHandler
-        builder.Services.AddTransient<AuthHeaderHandler>();
-
-        // Register ViewModels & Pages
-        builder.Services.AddTransient<RegisterViewModel>();
         builder.Services.AddTransient<RegisterPage>();
-
-
-
-        builder.Services.AddHttpClient<IClientAuthService, ClientAuthService>(client =>
-        {
-            client.BaseAddress = new Uri(
-                DeviceInfo.Platform == DevicePlatform.Android
-                    ? "https://10.0.2.2:7147/"
-                    : "https://localhost:7147/");
-        })
- .AddHttpMessageHandler<AuthHeaderHandler>()
- .ConfigurePrimaryHttpMessageHandler(() => GetInsecureHandler());
+        builder.Services.AddTransient<BookListPage>();
+        builder.Services.AddTransient<ChapterPickerPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

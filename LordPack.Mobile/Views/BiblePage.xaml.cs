@@ -16,10 +16,14 @@ public partial class BiblePage : ContentPage
     {
         base.OnAppearing();
 
-        // Only load if not already loaded to prevent refetching when switching tabs
+        // Load chapter if not yet loaded (first appearance)
         if (_viewModel.CurrentChapter == null)
         {
-            await _viewModel.LoadChapterCommand.ExecuteAsync(1);
+            await _viewModel.LoadChapterAsync(1);
+        }
+        else
+        {
+            _viewModel.CheckDownloadStatus();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using LordPack.Api.Data;
+using LordPack.Api.Data;
 using LordPack.Api.Interfaces;
 using LordPack.Shared.Models;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +17,7 @@ public class AudioBookRepository : IAudioBookRepository
     public async Task<IEnumerable<AudioBook>> GetBooksAsync(Testament? testament, string version)
     {
         var query = _context.AudioBooks
-            .Include(b => b.Chapters) // ✅ Load chapters for Service mapping
+            .Include(b => b.Chapters)
             .Where(b => b.Version == version);
 
         if (testament.HasValue)
@@ -26,6 +26,18 @@ public class AudioBookRepository : IAudioBookRepository
         }
 
         return await query.ToListAsync();
+    }
+
+    public async Task<IEnumerable<AudioBook>> GetAllBooksAsync(Testament? testament)
+    {
+        var query = _context.AudioBooks.AsQueryable();
+
+        if (testament.HasValue)
+        {
+            query = query.Where(b => b.Testament == testament.Value);
+        }
+
+        return await query.OrderBy(b => b.Testament).ThenBy(b => b.Name).ToListAsync();
     }
 
     public async Task<AudioBook?> GetBookWithChaptersAsync(int bookId)

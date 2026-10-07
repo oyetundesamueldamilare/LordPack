@@ -1,4 +1,4 @@
-﻿using LordPack.Mobile.Interfaces;
+using LordPack.Mobile.Interfaces;
 using LordPack.Shared.DTOs;
 using System.Net.Http.Json;
 
@@ -47,6 +47,19 @@ public class ClientAudioBookService : IClientAudioBookService
         catch
         {
             return null;
+        }
+    }
+
+    public async Task<List<ChapterSummaryDto>> GetChaptersByBookIdAsync(int bookId)
+    {
+        try
+        {
+            var result = await _httpClient.GetFromJsonAsync<List<ChapterSummaryDto>>($"api/audiobooks/{bookId}/chapters");
+            return result ?? new List<ChapterSummaryDto>();
+        }
+        catch
+        {
+            return new List<ChapterSummaryDto>();
         }
     }
 }

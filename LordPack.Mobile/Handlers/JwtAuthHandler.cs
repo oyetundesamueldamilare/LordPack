@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Headers;
+using System.Net.Http.Headers;
 
 namespace LordPack.Mobile.Handlers;
 
@@ -6,7 +6,7 @@ public class JwtAuthHandler : DelegatingHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var token = await SecureStorage.GetAsync("jwt_token");
+        var token = await SecureStorage.GetAsync("auth_token");
 
         if (!string.IsNullOrEmpty(token))
         {

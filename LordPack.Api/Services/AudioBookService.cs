@@ -1,4 +1,4 @@
-﻿using LordPack.Api.Interfaces;
+using LordPack.Api.Interfaces;
 using LordPack.Shared.DTOs;
 using LordPack.Shared.Models;
 
@@ -17,9 +17,9 @@ public class AudioBookService : IAudioBookService
     {
         var books = await _repository.GetBooksAsync(testament, version);
 
-        // ✅ Business Logic & DTO Projection lives exclusively in the Service
         return books.SelectMany(book => (book.Chapters ?? new List<Chapter>()).Select(chapter => new AudioBookDto
         {
+            Id = chapter.Id,
             Title = $"{book.Name} - Chapter {chapter.ChapterNumber}",
             Author = $"{book.Version} ({book.Testament})",
             Description = $"{book.Version} Audio for {book.Name} Chapter {chapter.ChapterNumber}",
@@ -29,10 +29,16 @@ public class AudioBookService : IAudioBookService
         }));
     }
 
-    public async Task<IEnumerable<Chapter>?> GetChaptersByBookIdAsync(int bookId)
+    public async Task<IEnumerable<ChapterSummaryDto>?> GetChaptersByBookIdAsync(int bookId)
     {
         var book = await _repository.GetBookWithChaptersAsync(bookId);
-        return book?.Chapters.OrderBy(c => c.ChapterNumber);
+        return book?.Chapters.OrderBy(c => c.ChapterNumber).Select(c => new ChapterSummaryDto
+        {
+            Id = c.Id,
+            ChapterNumber = c.ChapterNumber,
+            AudioUrl = c.AudioUrl,
+            DurationInSeconds = c.Duration.TotalSeconds
+        });
     }
 
     public async Task<ChapterDetailDto?> GetChapterDetailsAsync(int chapterId)
@@ -53,5 +59,18 @@ public class AudioBookService : IAudioBookService
                 Text = v.Text
             }).OrderBy(v => v.VerseNumber).ToList() ?? new()
         };
+    }
+
+    public async Task<IEnumerable<BibleBookDto>> GetBibleBooksAsync(Testament? testament)
+    {
+        var books = await _repository.GetAllBooksAsync(testament);
+        return books.Select(b => new BibleBookDto
+        {
+            Id = b.Id,
+            Name = b.Name,
+            Testament = b.Testament.ToString(),
+            TotalChapters = b.TotalChapters,
+            Version = b.Version
+        });
     }
 }

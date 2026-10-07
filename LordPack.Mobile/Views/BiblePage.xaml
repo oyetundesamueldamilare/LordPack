@@ -6,22 +6,22 @@
              x:Class="LordPack.Mobile.Views.BiblePage"
              x:DataType="vm:BibleViewModel"
              Title="Scripture Reader"
-             BackgroundColor="#0F172A">
+             BackgroundColor="{Binding BackgroundColor}">
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, Auto, *">
 
-        <!-- Chapter Header & Navigation Controls -->
-        <Grid Grid.Row="0" 
-              ColumnDefinitions="Auto, *, Auto, Auto" 
-              ColumnSpacing="8" 
-              Padding="12,12" 
+        <!-- ══ Row 0: Chapter Header & Audio Controls ══ -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto, *, Auto, Auto, Auto"
+              ColumnSpacing="8"
+              Padding="12,12"
               BackgroundColor="#1E293B">
 
-            <!-- Previous Chapter Button -->
-            <Button Grid.Column="0" 
-                    Text="◄" 
-                    Command="{Binding PreviousChapterCommand}" 
-                    BackgroundColor="Transparent" 
+            <!-- Previous Chapter -->
+            <Button Grid.Column="0"
+                    Text="◄"
+                    Command="{Binding PreviousChapterCommand}"
+                    BackgroundColor="Transparent"
                     TextColor="#94A3B8"
                     FontSize="16"
                     Padding="8,0"
@@ -29,63 +29,171 @@
 
             <!-- Chapter Metadata -->
             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
-                <Label Text="{Binding CurrentChapter.BookName, FallbackValue='Genesis'}" 
-                       FontSize="18" 
-                       FontAttributes="Bold" 
+                <Label Text="{Binding BookName, FallbackValue='Select a Book'}"
+                       FontSize="18"
+                       FontAttributes="Bold"
                        TextColor="White" />
-                <Label Text="{Binding CurrentChapter.ChapterNumber, StringFormat='Chapter {0}'}" 
-                       FontSize="13" 
+                <Label Text="{Binding CurrentChapter.ChapterNumber, StringFormat='Chapter {0}', FallbackValue=''}"
+                       FontSize="13"
                        TextColor="#94A3B8" />
             </VerticalStackLayout>
 
-            <!-- Next Chapter Button -->
-            <Button Grid.Column="2" 
-                    Text="►" 
-                    Command="{Binding NextChapterCommand}" 
-                    BackgroundColor="Transparent" 
+            <!-- Next Chapter -->
+            <Button Grid.Column="2"
+                    Text="►"
+                    Command="{Binding NextChapterCommand}"
+                    BackgroundColor="Transparent"
                     TextColor="#94A3B8"
                     FontSize="16"
                     Padding="8,0"
                     VerticalOptions="Center" />
 
+            <!-- Download / Offline Badge -->
+            <Grid Grid.Column="3" VerticalOptions="Center">
+
+                <!-- Download button (hidden when already downloaded or downloading) -->
+                <Button Text="⬇"
+                        Command="{Binding DownloadChapterAudioCommand}"
+                        BackgroundColor="#334155"
+                        TextColor="White"
+                        CornerRadius="18"
+                        WidthRequest="36"
+                        HeightRequest="36"
+                        Padding="0">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsAudioDownloaded}" Value="True">
+                            <Setter Property="IsVisible" Value="False" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsDownloading}" Value="True">
+                            <Setter Property="IsVisible" Value="False" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
+                <!-- Saved badge -->
+                <Label Text="✓ Saved"
+                       TextColor="#10B981"
+                       FontSize="12"
+                       FontAttributes="Bold"
+                       VerticalOptions="Center"
+                       IsVisible="{Binding IsAudioDownloaded}" />
+
+                <!-- Progress bar while downloading -->
+                <ProgressBar Progress="{Binding DownloadProgress}"
+                             WidthRequest="40"
+                             ProgressColor="#6366F1"
+                             IsVisible="{Binding IsDownloading}"
+                             VerticalOptions="Center" />
+            </Grid>
+
             <!-- Listen / Audio Playback Button -->
-            <Button Grid.Column="3" 
-                    Text="▶ Listen" 
-                    Command="{Binding PlayChapterAudioCommand}" 
-                    BackgroundColor="#6366F1" 
-                    TextColor="White" 
-                    CornerRadius="20" 
-                    HeightRequest="40" 
+            <Button Grid.Column="4"
+                    Text="{Binding IsPlaying, Converter={StaticResource PlayPauseTextConverter}, ConverterParameter='Listen'}"
+                    Command="{Binding PlayChapterAudioCommand}"
+                    BackgroundColor="#6366F1"
+                    TextColor="White"
+                    CornerRadius="20"
+                    HeightRequest="40"
                     Padding="12,0" />
         </Grid>
 
-        <!-- Verses Collection -->
-        <CollectionView Grid.Row="1" ItemsSource="{Binding Verses}" Margin="16">
+        <!-- ══ Row 1: Reader Toolbar (Font + Theme) ══ -->
+        <Grid Grid.Row="1"
+              ColumnDefinitions="Auto, Auto, *, Auto"
+              ColumnSpacing="6"
+              Padding="12,6"
+              BackgroundColor="#162032">
+
+            <Button Grid.Column="0"
+                    Text="A-"
+                    Command="{Binding DecreaseFontSizeCommand}"
+                    BackgroundColor="#334155"
+                    TextColor="White"
+                    CornerRadius="8"
+                    WidthRequest="36"
+                    HeightRequest="32"
+                    Padding="0"
+                    FontSize="13" />
+
+            <Button Grid.Column="1"
+                    Text="A+"
+                    Command="{Binding IncreaseFontSizeCommand}"
+                    BackgroundColor="#334155"
+                    TextColor="White"
+                    CornerRadius="8"
+                    WidthRequest="36"
+                    HeightRequest="32"
+                    Padding="0"
+                    FontSize="15" />
+
+            <Label Grid.Column="2"
+                   Text="{Binding FontSize, StringFormat='Font: {0:F0}pt'}"
+                   FontSize="12"
+                   TextColor="#94A3B8"
+                   VerticalOptions="Center"
+                   Margin="8,0,0,0" />
+
+            <Button Grid.Column="3"
+                    Text="☀"
+                    Command="{Binding ToggleThemeCommand}"
+                    BackgroundColor="#334155"
+                    TextColor="#F59E0B"
+                    CornerRadius="8"
+                    WidthRequest="36"
+                    HeightRequest="32"
+                    Padding="0"
+                    FontSize="15" />
+        </Grid>
+
+        <!-- ══ Row 2: Verses CollectionView ══ -->
+        <CollectionView Grid.Row="2"
+                        ItemsSource="{Binding Verses}"
+                        Margin="16">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="dtos:VerseDto">
-                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8" Padding="0,6">
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="10"
+                          Padding="0,6">
+
+                        <!-- Verse Number -->
                         <Label Grid.Column="0"
-                               Text="{Binding VerseNumber}" 
-                               FontSize="12" 
-                               FontAttributes="Bold" 
-                               TextColor="#6366F1" 
-                               VerticalOptions="Start" />
+                               Text="{Binding VerseNumber}"
+                               FontSize="12"
+                               FontAttributes="Bold"
+                               TextColor="#6366F1"
+                               VerticalOptions="Start"
+                               Margin="0,4,0,0" />
+
+                        <!-- Verse Text (font size bound to VM) -->
                         <Label Grid.Column="1"
-                               Text="{Binding Text}" 
-                               FontSize="16" 
-                               TextColor="#E2E8F0" 
+                               Text="{Binding Text}"
+                               FontSize="{Binding Source={RelativeSource AncestorType={x:Type vm:BibleViewModel}}, Path=FontSize}"
+                               TextColor="{Binding Source={RelativeSource AncestorType={x:Type vm:BibleViewModel}}, Path=VerseTextColor}"
                                LineBreakMode="WordWrap" />
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
+
+            <!-- Empty state when offline and not yet cached -->
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="12">
+                    <Label Text="📖"
+                           FontSize="48"
+                           HorizontalOptions="Center" />
+                    <Label Text="Select a book and chapter to begin reading."
+                           FontSize="15"
+                           TextColor="#94A3B8"
+                           HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
         </CollectionView>
 
-        <!-- Loading Indicator -->
-        <ActivityIndicator Grid.Row="1" 
-                           IsRunning="{Binding IsBusy}" 
-                           IsVisible="{Binding IsBusy}" 
-                           Color="#6366F1" 
-                           VerticalOptions="Center" 
+        <!-- Loading Indicator (overlays verse list) -->
+        <ActivityIndicator Grid.Row="2"
+                           IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           Color="#6366F1"
+                           VerticalOptions="Center"
                            HorizontalOptions="Center" />
 
     </Grid>

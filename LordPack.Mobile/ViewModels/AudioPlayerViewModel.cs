@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LordPack.Mobile.Interfaces;
-using LordPack.Mobile.Services;
 using LordPack.Shared.DTOs;
 using System.Collections.ObjectModel;
 
@@ -13,7 +12,6 @@ public partial class AudioPlayerViewModel : ObservableObject
     private readonly IAudioService _audioService;
     private System.Threading.Timer? _progressTimer;
 
-    // ✅ Clean backing fields without [ObservableProperty]
     private ObservableCollection<AudioBookDto> _audioBooks = new();
     public ObservableCollection<AudioBookDto> AudioBooks
     {
@@ -91,11 +89,13 @@ public partial class AudioPlayerViewModel : ObservableObject
     [RelayCommand]
     private async Task PlayAudioAsync(AudioBookDto audioBook)
     {
-        if (audioBook == null) return;
+        if (audioBook == null || string.IsNullOrEmpty(audioBook.AudioUrl)) return;
 
         SelectedAudioBook = audioBook;
+        var fileName = GetAudioFileName(audioBook);
+
         await _audioService.InitializeAsync(audioBook.AudioUrl);
-        await _audioService.PlayAsync();
+        await _audioService.PlayAudioAsync(audioBook.AudioUrl, fileName);
 
         IsPlaying = true;
         Duration = _audioService.Duration;
@@ -107,7 +107,7 @@ public partial class AudioPlayerViewModel : ObservableObject
     [RelayCommand]
     private async Task TogglePlayPauseAsync()
     {
-        if (SelectedAudioBook == null) return;
+        if (SelectedAudioBook == null || string.IsNullOrEmpty(SelectedAudioBook.AudioUrl)) return;
 
         if (_audioService.IsPlaying)
         {
@@ -117,7 +117,8 @@ public partial class AudioPlayerViewModel : ObservableObject
         }
         else
         {
-            await _audioService.PlayAsync();
+            var fileName = GetAudioFileName(SelectedAudioBook);
+            await _audioService.PlayAudioAsync(SelectedAudioBook.AudioUrl, fileName);
             IsPlaying = true;
             StartProgressTimer();
         }
@@ -162,5 +163,12 @@ public partial class AudioPlayerViewModel : ObservableObject
     {
         _progressTimer?.Dispose();
         _progressTimer = null;
+    }
+
+    private static string GetAudioFileName(AudioBookDto audioBook)
+    {
+        var title = string.IsNullOrWhiteSpace(audioBook.Title) ? "audiobook" : audioBook.Title;
+        var sanitizedTitle = title.Replace(" ", "_").ToLowerInvariant();
+        return $"{sanitizedTitle}.mp3";
     }
 }

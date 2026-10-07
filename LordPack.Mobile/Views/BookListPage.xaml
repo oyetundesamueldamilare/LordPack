@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:LordPack.Mobile.ViewModels"
+             xmlns:dtos="clr-namespace:LordPack.Shared.DTOs;assembly=LordPack.Shared"
+             x:Class="LordPack.Mobile.Views.BookListPage"
+             x:DataType="vm:BookListViewModel"
+             Title="Bible"
+             BackgroundColor="#0F172A">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- Testament Toggle -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="*, *"
+              Padding="16,12"
+              BackgroundColor="#1E293B">
+
+            <Button Grid.Column="0"
+                    Text="📖 Old Testament"
+                    Command="{Binding ToggleTestamentCommand}"
+                    BackgroundColor="#6366F1"
+                    TextColor="White"
+                    CornerRadius="10"
+                    Margin="0,0,4,0"
+                    HeightRequest="44">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding ShowOldTestament}" Value="True">
+                        <Setter Property="BackgroundColor" Value="#6366F1" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Button" Binding="{Binding ShowOldTestament}" Value="False">
+                        <Setter Property="BackgroundColor" Value="#334155" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+
+            <Button Grid.Column="1"
+                    Text="✝️ New Testament"
+                    Command="{Binding ToggleTestamentCommand}"
+                    BackgroundColor="#334155"
+                    TextColor="White"
+                    CornerRadius="10"
+                    Margin="4,0,0,0"
+                    HeightRequest="44">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding ShowOldTestament}" Value="False">
+                        <Setter Property="BackgroundColor" Value="#6366F1" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Button" Binding="{Binding ShowOldTestament}" Value="True">
+                        <Setter Property="BackgroundColor" Value="#334155" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+        </Grid>
+
+        <!-- Book List -->
+        <RefreshView Grid.Row="1"
+                     Command="{Binding LoadBooksCommand}"
+                     IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding Books}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dtos:BibleBookDto">
+                        <Border BackgroundColor="#1E293B"
+                                StrokeThickness="0"
+                                Margin="16,4"
+                                Padding="16,14"
+                                StrokeShape="RoundRectangle 10">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:BookListViewModel}}, Path=SelectBookCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Grid.Column="0"
+                                       Text="{Binding Name}"
+                                       FontSize="17"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       VerticalOptions="Center" />
+                                <Label Grid.Column="1"
+                                       Text="{Binding TotalChapters, StringFormat='{0} ch.'}"
+                                       FontSize="13"
+                                       TextColor="#94A3B8"
+                                       VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <!-- Busy Indicator -->
+        <ActivityIndicator Grid.Row="1"
+                           IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           Color="#6366F1"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center" />
+    </Grid>
+
+</ContentPage>

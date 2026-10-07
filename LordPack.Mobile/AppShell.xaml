@@ -1,32 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Shell
-    x:Class="LordPack.Mobile.AppShell"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:views="clr-namespace:LordPack.Mobile.Views"
-    Shell.FlyoutBehavior="Disabled">
+<Shell x:Class="LordPack.Mobile.AppShell"
+       xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:views="clr-namespace:LordPack.Mobile.Views"
+       Shell.FlyoutBehavior="Disabled"
+       Shell.TabBarBackgroundColor="#1E293B"
+       Shell.TabBarForegroundColor="#6366F1"
+       Shell.TabBarUnselectedColor="#94A3B8">
 
-    <!-- Login Page Route -->
-    <ShellContent
-        Title="Login"
-        ContentTemplate="{DataTemplate views:LoginPage}"
-        Route="LoginPage"
-        FlyoutItemIsVisible="False" />
+    <!-- Auth Route Container -->
+    <ShellContent Title="Login"
+                  Route="LoginPage"
+                  ContentTemplate="{DataTemplate views:LoginPage}"
+                  Shell.FlyoutItemIsVisible="False"
+                  Shell.TabBarIsVisible="False" />
 
-    <ShellContent Title="Player" ContentTemplate="{DataTemplate views:AudioPlayerPage}" Route="AudioPlayerPage" FlyoutItemIsVisible="False" />
-    
-    <!-- Main Audio Dashboard Route -->
-    <ShellContent
-        Title="Dashboard"
-        ContentTemplate="{DataTemplate views:MainPage}"
-        Route="MainPage" />
-    <TabBar>
-        <Tab Title="Listen" Icon="icon_audio.png">
-            <ShellContent ContentTemplate="{DataTemplate views:MainPage}" />
+    <!-- Main Tab Navigation -->
+    <TabBar Route="MainPage">
+
+        <!-- Bible tab: lands on Book List (testament picker → book → chapter → reader) -->
+        <Tab Title="Bible" Icon="bible_icon.png">
+            <ShellContent ContentTemplate="{DataTemplate views:BookListPage}" Route="BookListPage" />
         </Tab>
-        <Tab Title="Read Bible" Icon="icon_bible.png">
-            <ShellContent ContentTemplate="{DataTemplate views:BiblePage}" />
+
+        <Tab Title="Audio" Icon="audio_icon.png">
+            <ShellContent ContentTemplate="{DataTemplate views:AudioPlayerPage}" Route="AudioPlayerPage" />
         </Tab>
+
+        <Tab Title="Profile" Icon="profile_icon.png">
+            <ShellContent ContentTemplate="{DataTemplate views:ProfilePage}" Route="ProfilePage" />
+        </Tab>
+
     </TabBar>
 
 </Shell>

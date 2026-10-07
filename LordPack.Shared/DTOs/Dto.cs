@@ -1,4 +1,4 @@
-﻿namespace LordPack.Shared.DTOs;
+namespace LordPack.Shared.DTOs;
 
 public class RegisterRequestDto
 {
@@ -47,8 +47,25 @@ public class ChapterDetailDto
     public List<VerseDto> Verses { get; set; } = new();
 }
 
+public class ChapterSummaryDto
+{
+    public int Id { get; set; }
+    public int ChapterNumber { get; set; }
+    public string AudioUrl { get; set; } = string.Empty;
+    public double DurationInSeconds { get; set; }
+}
+
 public class VerseDto
 {
     public int VerseNumber { get; set; }
     public string Text { get; set; } = string.Empty;
+}
+
+public class BibleBookDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Testament { get; set; } = string.Empty;
+    public int TotalChapters { get; set; }
+    public string Version { get; set; } = "KJV";
 }
