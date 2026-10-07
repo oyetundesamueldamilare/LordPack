@@ -1,5 +1,9 @@
 <Solution>
-  <Project Path="LordPack.Api/LordPack.Api.csproj" />
-  <Project Path="LordPack.Mobile/LordPack.Mobile.csproj" Id="104e412b-ee5a-4ec7-bd35-8fb02a9c194f" />
+  <Project Path="LordPack.Api/LordPack.Api.csproj">
+    <BuildDependency Project="LordPack.Mobile/LordPack.Mobile.csproj" />
+  </Project>
+  <Project Path="LordPack.Mobile/LordPack.Mobile.csproj" Id="104e412b-ee5a-4ec7-bd35-8fb02a9c194f">
+    <Deploy Solution="Debug|*" />
+  </Project>
   <Project Path="LordPack.Shared/LordPack.Shared.csproj" />
 </Solution>

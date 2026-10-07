@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net10.0-android</TargetFrameworks>
@@ -27,7 +27,7 @@
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 
 		<!-- Suppresses MVVM Toolkit WinRT informational warning -->
-		<NoWarn>$(NoWarn);MVVMTK0034</NoWarn>
+		<NoWarn>$(NoWarn);MVVMTK0034;MVVMTK0045</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -41,6 +41,7 @@
 
 	<ItemGroup>
 		<!-- Consolidated Packages -->
+		<PackageReference Include="CommunityToolkit.Maui.Core" Version="15.0.1" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
@@ -48,17 +49,14 @@
 		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0" />
 		<!-- Lightweight Audio Player Plugin -->
 		<PackageReference Include="Plugin.Maui.Audio" Version="3.0.1" />
+		<!-- Local SQLite Database for Offline Bible Text -->
+		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.10" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<!-- Mobile app ONLY references Shared -->
 		<ProjectReference Include="..\LordPack.Shared\LordPack.Shared.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<MauiXaml Update="Views\LoginPage.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
 	</ItemGroup>
 
 </Project>

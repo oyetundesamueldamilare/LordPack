@@ -1,14 +1,23 @@
-﻿namespace LordPack.Mobile;
+﻿using LordPack.Mobile.Interfaces;
+
+namespace LordPack.Mobile;
 
 public partial class App : Application
 {
-    public App()
+    private readonly IPushNotificationService _pushNotificationService;
+
+    public App(IPushNotificationService pushNotificationService)
     {
         InitializeComponent();
+        _pushNotificationService = pushNotificationService;
+
+        MainPage = new AppShell();
     }
 
-    protected override Window CreateWindow(IActivationState? activationState)
+    protected override async void OnStart()
     {
-        return new Window(new AppShell());
+        base.OnStart();
+        await _pushNotificationService.InitializeAsync();
+        await _pushNotificationService.RegisterDeviceTokenWithApiAsync();
     }
 }

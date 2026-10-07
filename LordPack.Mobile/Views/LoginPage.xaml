@@ -4,19 +4,61 @@
              xmlns:vm="clr-namespace:LordPack.Mobile.ViewModels"
              x:Class="LordPack.Mobile.Views.LoginPage"
              x:DataType="vm:LoginViewModel"
-             Title="Sign In">
+             Title="Login"
+             Shell.NavBarIsVisible="False">
 
-    <VerticalStackLayout Padding="30" Spacing="15" VerticalOptions="Center">
-        <Label Text="LordPack Audio" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" />
+    <ScrollView VerticalOptions="Center">
+        <VerticalStackLayout Padding="30" Spacing="15" MaximumWidthRequest="400">
 
-        <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email" />
-        <Entry Placeholder="Password" Text="{Binding Password}" IsPassword="True" />
+            <Label Text="Welcome to LordPack"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
 
-        <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding ErrorMessage.Length}" />
+            <Label Text="Sign in to manage your packages"
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,20" />
 
-        <Button Text="Login" Command="{Binding LoginCommand}" />
-        <Button Text="Continue as Guest" Command="{Binding LoginAsGuestCommand}" BackgroundColor="Gray" />
+            <!-- Email Input -->
+            <Entry Placeholder="Email"
+                   Text="{Binding Email}"
+                   Keyboard="Email"
+                   ReturnType="Next"
+                   IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
 
-        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
-    </VerticalStackLayout>
+            <!-- Password Input -->
+            <Entry Placeholder="Password"
+                   Text="{Binding Password}"
+                   IsPassword="True"
+                   ReturnType="Done"
+                   IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+
+            <!-- Error Message Display -->
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="Red"
+                   FontSize="12"
+                   HorizontalOptions="Center"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringIsNotNullOrEmptyConverter}}" />
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               HorizontalOptions="Center" />
+
+            <!-- Action Buttons -->
+            <Button Text="Login"
+                    Command="{Binding LoginCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                    Margin="0,10,0,0" />
+
+            <Button Text="Continue as Guest"
+                    Command="{Binding LoginAsGuestCommand}"
+                    Style="{StaticResource TextButton}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
 </ContentPage>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:LordPack.Mobile.ViewModels"
+             x:Class="LordPack.Mobile.Views.ProfilePage"
+             x:DataType="vm:ProfileViewModel"
+             Title="Account Profile"
+             BackgroundColor="#0F172A">
+
+    <ScrollView Padding="20">
+        <VerticalStackLayout Spacing="20" VerticalOptions="Center">
+
+            <!-- Profile Avatar / Card -->
+            <Border BackgroundColor="#1E293B" StrokeShape="RoundRectangle 12" Padding="20">
+                <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+                    <Label Text="{Binding FullName}" FontSize="22" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+                    <Label Text="{Binding Email}" FontSize="14" TextColor="#94A3B8" HorizontalOptions="Center" />
+
+                    <!-- Guest Badge -->
+                    <Border IsVisible="{Binding IsGuest}" BackgroundColor="#334155" StrokeShape="RoundRectangle 6" Padding="8,4" HorizontalOptions="Center">
+                        <Label Text="Guest Mode" FontSize="12" TextColor="#F59E0B" FontAttributes="Bold" />
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Upgrade Banner for Guest Users -->
+            <Border IsVisible="{Binding IsGuest}" BackgroundColor="#1E1B4B" Stroke="#6366F1" StrokeShape="RoundRectangle 10" Padding="16">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Sync Your Data" FontSize="16" FontAttributes="Bold" TextColor="White" />
+                    <Label Text="Create a full account to back up your bookmarks and offline audio." FontSize="13" TextColor="#C7D2FE" />
+                    <Button Text="Create Account" Command="{Binding UpgradeAccountCommand}" BackgroundColor="#6366F1" TextColor="White" CornerRadius="8" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Logout Button -->
+            <Button Text="Log Out" Command="{Binding LogoutCommand}" BackgroundColor="#EF4444" TextColor="White" CornerRadius="8" Margin="0,20,0,0" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

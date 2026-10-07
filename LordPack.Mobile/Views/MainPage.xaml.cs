@@ -1,4 +1,4 @@
-﻿using LordPack.Mobile.ViewModels;
+using LordPack.Mobile.ViewModels;
 
 namespace LordPack.Mobile.Views;
 
@@ -12,9 +12,12 @@ public partial class MainPage : ContentPage
         BindingContext = _viewModel = viewModel;
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.LoadAudioBooksCommand.ExecuteAsync(null);
+        if (!_viewModel.AudioBooks.Any())
+        {
+            _viewModel.LoadAudioBooksCommand.Execute(null);
+        }
     }
 }

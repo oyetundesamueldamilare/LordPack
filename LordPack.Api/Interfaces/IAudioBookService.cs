@@ -1,11 +1,12 @@
-﻿using LordPack.Shared.Models;
+using LordPack.Shared.DTOs;
+using LordPack.Shared.Models;
 
-namespace LordPack.Api.Interfaces
+namespace LordPack.Api.Interfaces;
+
+public interface IAudioBookService
 {
-    public interface IAudioBookService
-    {
-        Task<IEnumerable<AudioBook>> GetBooksAsync(Testament? testament, string version);
-        Task<IEnumerable<Chapter>?> GetChaptersByBookIdAsync(int bookId);
-        Task<Chapter?> GetChapterDetailsAsync(int chapterId);
-    }
+    Task<IEnumerable<AudioBookDto>> GetAudioBookDtosAsync(Testament? testament, string version);
+    Task<IEnumerable<ChapterSummaryDto>?> GetChaptersByBookIdAsync(int bookId);
+    Task<ChapterDetailDto?> GetChapterDetailsAsync(int chapterId);
+    Task<IEnumerable<BibleBookDto>> GetBibleBooksAsync(Testament? testament);
 }

@@ -1,11 +1,8 @@
-﻿using LordPack.Api.Interfaces;
 using LordPack.Mobile.Interfaces;
-using LordPack.Shared.DTOs; // Assuming DTOs like AudioBookDto are shared
+using LordPack.Shared.DTOs;
 using System.Net.Http.Json;
 
 namespace LordPack.Mobile.Services;
-
-
 
 public class ClientAudioBookService : IClientAudioBookService
 {
@@ -23,9 +20,8 @@ public class ClientAudioBookService : IClientAudioBookService
             var result = await _httpClient.GetFromJsonAsync<List<AudioBookDto>>("api/audiobooks");
             return result ?? new List<AudioBookDto>();
         }
-        catch (Exception)
+        catch
         {
-            // Log or handle network error
             return new List<AudioBookDto>();
         }
     }
@@ -36,9 +32,34 @@ public class ClientAudioBookService : IClientAudioBookService
         {
             return await _httpClient.GetFromJsonAsync<AudioBookDto>($"api/audiobooks/{id}");
         }
-        catch (Exception)
+        catch
         {
             return null;
+        }
+    }
+
+    public async Task<ChapterDetailDto?> GetChapterDetailsAsync(int chapterId)
+    {
+        try
+        {
+            return await _httpClient.GetFromJsonAsync<ChapterDetailDto>($"api/audiobooks/chapters/{chapterId}/details");
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    public async Task<List<ChapterSummaryDto>> GetChaptersByBookIdAsync(int bookId)
+    {
+        try
+        {
+            var result = await _httpClient.GetFromJsonAsync<List<ChapterSummaryDto>>($"api/audiobooks/{bookId}/chapters");
+            return result ?? new List<ChapterSummaryDto>();
+        }
+        catch
+        {
+            return new List<ChapterSummaryDto>();
         }
     }
 }

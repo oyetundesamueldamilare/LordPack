@@ -23,13 +23,13 @@ namespace LordPack.Api.Repositories
 
         public async Task<Devotional?> GetByIdAsync(int id)
         {
-            return await _context.Devotionals.FindAsync(id);
+            return await _context.Devotionals.FirstOrDefaultAsync(d => d.Id == id);
         }
 
         public async Task<Devotional?> GetDevotionalByDateAsync(DateTime date)
         {
             return await _context.Devotionals
-                .FirstOrDefaultAsync(d => d.Date.Date == date.Date);
+                .FindAsync();
         }
 
         public async Task<Devotional?> GetLatestDevotionalAsync()
